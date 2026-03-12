@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
                 <p class="text-sm uppercase tracking-[0.18em] text-lime-200">Admin dashboard</p>
-                <h1 class="mt-2 text-3xl font-semibold text-white">Manage inventory, bookings, users, and payments.</h1>
+                <h1 class="mt-2 text-3xl font-semibold text-white">Manage inventory, customers, bookings, users, and payments.</h1>
             </div>
             <div class="flex gap-3">
                 <a href="{{ route('admin.cars.create') }}" class="button-primary">Add car</a>
@@ -23,8 +23,8 @@
                 <p class="mt-3 text-4xl font-semibold text-white">{{ $stats['bookings'] }}</p>
             </div>
             <div class="stat-tile">
-                <p class="text-sm text-slate-400">Users</p>
-                <p class="mt-3 text-4xl font-semibold text-white">{{ $stats['users'] }}</p>
+                <p class="text-sm text-slate-400">Customers</p>
+                <p class="mt-3 text-4xl font-semibold text-white">{{ $stats['customers'] }}</p>
             </div>
             <div class="stat-tile">
                 <p class="text-sm text-slate-400">Revenue captured</p>
@@ -47,7 +47,7 @@
                         <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
                             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                                 <div>
-                                    <p class="text-sm text-slate-400">{{ $booking->reference }} · {{ $booking->user->name }}</p>
+                                    <p class="text-sm text-slate-400">{{ $booking->reference }} · {{ $booking->customer?->name ?? $booking->user->name }}</p>
                                     <p class="mt-1 text-lg font-semibold text-white">{{ $booking->car->name }}</p>
                                     <p class="mt-1 text-sm text-slate-400">{{ $booking->car->city->name }} · {{ $booking->start_at->format('M d, Y') }}</p>
                                 </div>
@@ -90,6 +90,7 @@
                 <div class="shell-panel p-7">
                     <p class="text-sm uppercase tracking-[0.18em] text-slate-500">Quick links</p>
                     <div class="mt-5 grid gap-3">
+                        <a href="{{ route('admin.customers.index') }}" class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition hover:bg-white/10">Manage customers</a>
                         <a href="{{ route('admin.users.index') }}" class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition hover:bg-white/10">Manage users</a>
                         <a href="{{ route('admin.payments.index') }}" class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition hover:bg-white/10">Review payments</a>
                         <a href="{{ route('trips.index') }}" class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition hover:bg-white/10">Open trip dashboard</a>

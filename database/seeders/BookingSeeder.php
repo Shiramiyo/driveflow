@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Booking;
 use App\Models\Car;
+use App\Models\Customer;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -33,7 +34,7 @@ class BookingSeeder extends Seeder
                 'booking_rate' => 'refundable',
                 'payment_method' => 'card',
                 'card_last_four' => '4242',
-                'payment_country' => 'Thailand',
+                'payment_country' => 'Cambodia',
                 'driver_phone' => $demoUser->phone,
                 'driver_license_number' => $demoUser->driver_license_number,
                 'notes' => 'Need child seat for airport arrival.',
@@ -61,6 +62,17 @@ class BookingSeeder extends Seeder
                 continue;
             }
 
+            $customer = Customer::updateOrCreate(
+                ['user_id' => $seedBooking['user']->id],
+                [
+                    'city_id' => $car->city_id,
+                    'name' => $seedBooking['user']->name,
+                    'phone' => $seedBooking['driver_phone'],
+                    'email' => $seedBooking['user']->email,
+                    'driver_license_number' => $seedBooking['driver_license_number'],
+                ],
+            );
+
             $days = max(1, (int) ceil($seedBooking['start']->diffInMinutes($seedBooking['end']) / 1440));
             $subtotal = $days * (float) $car->price_per_day;
             $protectionFee = $seedBooking['booking_rate'] === 'refundable' ? round($subtotal * 0.12, 2) : 0;
@@ -73,6 +85,7 @@ class BookingSeeder extends Seeder
             Booking::updateOrCreate(
                 ['user_id' => $seedBooking['user']->id, 'car_id' => $car->id, 'start_at' => $seedBooking['start']],
                 [
+                    'customer_id' => $customer->id,
                     'city_id' => $car->city_id,
                     'reference' => 'TRIP-'.strtoupper(Str::random(6)),
                     'status' => 'confirmed',

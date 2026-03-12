@@ -13,7 +13,7 @@ class BookingManagementController extends Controller
 {
     public function index(Request $request): View
     {
-        $bookings = Booking::with(['car.city', 'user'])
+        $bookings = Booking::with(['car.city', 'customer', 'user'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->orderByDesc('start_at')
             ->paginate(12)

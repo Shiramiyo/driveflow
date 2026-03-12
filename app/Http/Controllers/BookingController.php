@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Car;
+use App\Models\Customer;
 use App\Support\TripPriceCalculator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,9 +39,9 @@ class BookingController extends Controller
             'paymentMethods' => $this->paymentMethods(),
             'formDefaults' => [
                 ...$payload,
-                'driver_phone' => $request->user()->phone,
-                'driver_license_number' => $request->user()->driver_license_number,
-                'payment_country' => 'Thailand',
+                'driver_phone' => $request->user()->customerProfile?->phone ?: $request->user()->phone,
+                'driver_license_number' => $request->user()->customerProfile?->driver_license_number ?: $request->user()->driver_license_number,
+                'payment_country' => 'Cambodia',
             ],
         ]);
     }
@@ -91,8 +92,21 @@ class BookingController extends Controller
             'driver_license_number' => $validated['driver_license_number'],
         ])->save();
 
+        $customer = Customer::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'city_id' => $user->customerProfile?->city_id ?: $car->city_id,
+                'name' => $user->name,
+                'phone' => $validated['driver_phone'],
+                'email' => $user->email,
+                'driver_license_number' => $validated['driver_license_number'],
+                'address' => $user->customerProfile?->address,
+            ],
+        );
+
         $booking = Booking::create([
             'user_id' => $user->id,
+            'customer_id' => $customer->id,
             'car_id' => $car->id,
             'city_id' => $car->city_id,
             'reference' => $this->generateReference(),

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\City;
+use App\Models\Customer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +20,7 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+            'cities' => City::orderBy('name')->get(),
         ]);
     }
 
@@ -33,6 +36,18 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
+        Customer::updateOrCreate(
+            ['user_id' => $request->user()->id],
+            [
+                'city_id' => $request->validated('city_id'),
+                'name' => $request->validated('name'),
+                'phone' => $request->validated('phone'),
+                'email' => $request->validated('email'),
+                'driver_license_number' => $request->validated('driver_license_number'),
+                'address' => $request->validated('address'),
+            ],
+        );
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

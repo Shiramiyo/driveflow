@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('state')->nullable();
-            $table->string('country')->default('Thailand');
+            $table->string('country')->default('Cambodia');
             $table->string('hero_image')->nullable();
             $table->string('spotlight_copy')->nullable();
             $table->timestamps();

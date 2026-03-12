@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Car;
-use App\Models\User;
+use App\Models\Customer;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -16,10 +16,10 @@ class DashboardController extends Controller
             'stats' => [
                 'cars' => Car::where('is_active', true)->count(),
                 'bookings' => Booking::count(),
-                'users' => User::count(),
+                'customers' => Customer::count(),
                 'revenue' => Booking::sum('total_amount'),
             ],
-            'recentBookings' => Booking::with(['car.city', 'user'])
+            'recentBookings' => Booking::with(['car.city', 'customer', 'user'])
                 ->latest()
                 ->take(6)
                 ->get(),

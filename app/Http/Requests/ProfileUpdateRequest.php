@@ -28,6 +28,8 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'phone' => ['nullable', 'string', 'max:30'],
             'driver_license_number' => ['nullable', 'string', 'max:60'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'city_id' => ['nullable', Rule::exists('cities', 'id')],
         ];
     }
 }

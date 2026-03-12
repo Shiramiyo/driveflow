@@ -63,6 +63,25 @@
             </div>
         </div>
 
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
+                <x-input-label for="city_id" :value="__('Province / City')" />
+                <select id="city_id" name="city_id" class="input-field mt-1 block w-full">
+                    <option value="">{{ __('Select a province / city') }}</option>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city->id }}" @selected((string) old('city_id', $user->customerProfile?->city_id) === (string) $city->id)>{{ $city->name }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('city_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="address" :value="__('Address')" />
+                <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $user->customerProfile?->address)" autocomplete="street-address" />
+                <x-input-error class="mt-2" :messages="$errors->get('address')" />
+            </div>
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

@@ -29,7 +29,7 @@
                                     {{ $booking->status }}
                                 </span>
                             </div>
-                            <p class="mt-3 text-sm text-slate-400">{{ $booking->user->name }} booked {{ $booking->car->name }} in {{ $booking->car->city->name }}</p>
+                            <p class="mt-3 text-sm text-slate-400">{{ $booking->customer?->name ?? $booking->user->name }} booked {{ $booking->car->name }} in {{ $booking->car->city->name }}</p>
                             <div class="mt-4 flex flex-wrap gap-3 text-sm text-slate-300">
                                 <span class="pill">{{ $booking->start_at->format('M d, Y H:i') }}</span>
                                 <span class="pill">{{ $booking->trip_days }} day{{ $booking->trip_days > 1 ? 's' : '' }}</span>

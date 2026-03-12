@@ -21,6 +21,11 @@ class City extends Model
         return $this->hasMany(Car::class);
     }
 
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

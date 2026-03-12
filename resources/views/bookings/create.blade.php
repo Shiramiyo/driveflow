@@ -55,7 +55,7 @@
 
                         <div>
                             <label for="payment_country" class="field-label">Country</label>
-                            <input id="payment_country" name="payment_country" type="text" class="input-field" value="{{ old('payment_country', $formDefaults['payment_country']) }}" placeholder="Thailand">
+                                <input id="payment_country" name="payment_country" type="text" class="input-field" value="{{ old('payment_country', $formDefaults['payment_country']) }}" placeholder="Cambodia">
                             <x-input-error class="mt-2" :messages="$errors->get('payment_country')" />
                         </div>
                     </div>
