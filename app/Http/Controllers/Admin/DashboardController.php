@@ -17,15 +17,18 @@ class DashboardController extends Controller
                 'cars' => Car::where('is_active', true)->count(),
                 'bookings' => Booking::count(),
                 'customers' => Customer::count(),
-                'revenue' => Booking::sum('total_amount'),
             ],
             'recentBookings' => Booking::with(['car.city', 'customer', 'user'])
                 ->latest()
-                ->take(6)
+                ->take(5)
                 ->get(),
             'recentCars' => Car::with(['city', 'host'])
                 ->latest()
-                ->take(5)
+                ->take(4)
+                ->get(),
+            'recentCustomers' => Customer::with('city')
+                ->latest()
+                ->take(4)
                 ->get(),
         ]);
     }
