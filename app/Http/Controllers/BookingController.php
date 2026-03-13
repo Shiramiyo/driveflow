@@ -20,7 +20,6 @@ class BookingController extends Controller
             'start_at' => $request->input('start_at', now()->addDay()->setTime(10, 0)->format('Y-m-d\TH:i')),
             'end_at' => $request->input('end_at', now()->addDays(2)->setTime(10, 0)->format('Y-m-d\TH:i')),
             'pickup_option' => $request->input('pickup_option', $car->pickup_options[0] ?? 'self_pickup'),
-            'booking_rate' => $request->input('booking_rate', 'non_refundable'),
         ];
 
         $quote = $calculator->quote(
@@ -28,20 +27,18 @@ class BookingController extends Controller
             $payload['start_at'],
             $payload['end_at'],
             $payload['pickup_option'],
-            $payload['booking_rate'],
         );
 
         return view('bookings.create', [
             'car' => $car->load(['city', 'host']),
             'quote' => $quote,
             'pickupOptionLabels' => $this->pickupOptionLabels(),
-            'bookingRates' => $this->bookingRates(),
             'paymentMethods' => $this->paymentMethods(),
             'formDefaults' => [
                 ...$payload,
                 'driver_phone' => $request->user()->customerProfile?->phone ?: $request->user()->phone,
                 'driver_license_number' => $request->user()->customerProfile?->driver_license_number ?: $request->user()->driver_license_number,
-                'payment_country' => 'Cambodia',
+                'payment_method' => $request->input('payment_method', 'card'),
             ],
         ]);
     }
@@ -52,16 +49,10 @@ class BookingController extends Controller
             'start_at' => ['required', 'date'],
             'end_at' => ['required', 'date', 'after:start_at'],
             'pickup_option' => ['required', Rule::in($car->pickup_options)],
-            'booking_rate' => ['required', Rule::in(array_keys($this->bookingRates()))],
             'driver_phone' => ['required', 'string', 'max:30'],
             'driver_license_number' => ['required', 'string', 'max:60'],
             'payment_method' => ['required', Rule::in(array_keys($this->paymentMethods()))],
             'card_number' => ['nullable', 'string', 'max:30', 'required_if:payment_method,card'],
-            'expiry_date' => ['nullable', 'string', 'max:10', 'required_if:payment_method,card'],
-            'security_code' => ['nullable', 'string', 'max:4', 'required_if:payment_method,card'],
-            'payment_country' => ['required', 'string', 'max:100'],
-            'notes' => ['nullable', 'string', 'max:1000'],
-            'wants_marketing' => ['nullable', 'boolean'],
             'terms_accepted' => ['accepted'],
         ]);
 
@@ -70,7 +61,6 @@ class BookingController extends Controller
             $validated['start_at'],
             $validated['end_at'],
             $validated['pickup_option'],
-            $validated['booking_rate'],
         );
 
         $hasConflict = Booking::query()
@@ -111,12 +101,12 @@ class BookingController extends Controller
             'city_id' => $car->city_id,
             'reference' => $this->generateReference(),
             'status' => 'confirmed',
-            'booking_rate' => $validated['booking_rate'],
+            'booking_rate' => 'non_refundable',
             'payment_method' => $validated['payment_method'],
             'card_last_four' => $validated['payment_method'] === 'card'
                 ? substr((string) $validated['card_number'], -4)
                 : null,
-            'payment_country' => $validated['payment_country'],
+            'payment_country' => 'Cambodia',
             'pickup_option' => $validated['pickup_option'],
             'pickup_location' => $car->location_name,
             'dropoff_location' => $car->location_name,
@@ -130,8 +120,8 @@ class BookingController extends Controller
             'total_amount' => $quote['total_amount'],
             'driver_phone' => $validated['driver_phone'],
             'driver_license_number' => $validated['driver_license_number'],
-            'notes' => $validated['notes'] ?? null,
-            'wants_marketing' => (bool) ($validated['wants_marketing'] ?? false),
+            'notes' => null,
+            'wants_marketing' => false,
             'terms_accepted' => true,
         ]);
 
@@ -142,18 +132,10 @@ class BookingController extends Controller
             ->with('status', 'Trip booked successfully.');
     }
 
-    private function bookingRates(): array
-    {
-        return [
-            'non_refundable' => 'Non-refundable',
-            'refundable' => 'Refundable',
-        ];
-    }
-
     private function paymentMethods(): array
     {
         return [
-            'card' => 'Card payment',
+            'card' => 'Card',
             'aba' => 'ABA transfer',
         ];
     }
