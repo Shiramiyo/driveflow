@@ -16,10 +16,10 @@
             <div class="page-width">
                 <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
                     <div class="max-w-2xl">
-                        <span class="eyebrow">Ready to book</span>
-                        <h1 class="display-title mt-6">Create your account and keep every trip in one polished dashboard.</h1>
+                        <span class="eyebrow">Account access</span>
+                        <h1 class="display-title mt-6">Sign in or register before booking a car.</h1>
                         <p class="section-copy mt-6 max-w-xl">
-                            Profile, trips, checkout, and admin tools all live in the same Laravel experience so the PDF flow feels complete instead of disconnected.
+                            Customer accounts are used to save booking records and basic driver details.
                         </p>
                     </div>
 
