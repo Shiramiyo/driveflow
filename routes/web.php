@@ -4,8 +4,6 @@ use App\Http\Controllers\Admin\BookingManagementController;
 use App\Http\Controllers\Admin\CarManagementController;
 use App\Http\Controllers\Admin\CustomerManagementController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\PaymentManagementController;
-use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
@@ -49,11 +47,9 @@ Route::middleware(['auth', 'admin'])
         Route::get('/bookings', [BookingManagementController::class, 'index'])->name('bookings.index');
         Route::patch('/bookings/{booking}', [BookingManagementController::class, 'update'])->name('bookings.update');
 
-        Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
         Route::get('/customers', [CustomerManagementController::class, 'index'])->name('customers.index');
         Route::get('/customers/{customer}/edit', [CustomerManagementController::class, 'edit'])->name('customers.edit');
         Route::put('/customers/{customer}', [CustomerManagementController::class, 'update'])->name('customers.update');
-        Route::get('/payments', [PaymentManagementController::class, 'index'])->name('payments.index');
     });
 
 require __DIR__.'/auth.php';
