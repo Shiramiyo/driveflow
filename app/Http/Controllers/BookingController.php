@@ -53,6 +53,8 @@ class BookingController extends Controller
             'driver_license_number' => ['required', 'string', 'max:60'],
             'payment_method' => ['required', Rule::in(array_keys($this->paymentMethods()))],
             'card_number' => ['nullable', 'string', 'max:30', 'required_if:payment_method,card'],
+            'expiry_date' => ['nullable', 'string', 'max:10', 'required_if:payment_method,card'],
+            'security_code' => ['nullable', 'string', 'max:4', 'required_if:payment_method,card'],
             'terms_accepted' => ['accepted'],
         ]);
 
