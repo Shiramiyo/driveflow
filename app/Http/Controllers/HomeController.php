@@ -16,21 +16,13 @@ class HomeController extends Controller
 
         $featuredCars = Car::with(['city', 'host'])
             ->where('is_active', true)
-            ->where('is_featured', true)
-            ->orderByDesc('rating')
+            ->latest()
             ->take(6)
-            ->get();
-
-        $recommendedCars = Car::with('city')
-            ->where('is_active', true)
-            ->orderByDesc('trips_count')
-            ->take(3)
             ->get();
 
         return view('home', [
             'cities' => $cities,
             'featuredCars' => $featuredCars,
-            'recommendedCars' => $recommendedCars,
             'defaultStartAt' => now()->addDay()->setTime(10, 0)->format('Y-m-d\TH:i'),
             'defaultEndAt' => now()->addDays(3)->setTime(10, 0)->format('Y-m-d\TH:i'),
         ]);
