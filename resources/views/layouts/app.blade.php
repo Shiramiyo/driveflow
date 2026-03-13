@@ -34,8 +34,8 @@
 
         <footer class="border-t border-white/10">
             <div class="page-width flex flex-col gap-4 py-8 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-                <p>Driveflow demo built in Laravel for a car rental marketplace workflow.</p>
-                <p>Admin login: <span class="text-white">admin@driveflow.test</span> / <span class="text-white">password</span></p>
+                <p>Driveflow car rental system built with Laravel and MySQL.</p>
+                <p>Admin area for cars, bookings, and customers.</p>
             </div>
         </footer>
     </body>
