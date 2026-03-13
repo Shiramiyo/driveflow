@@ -28,12 +28,9 @@
             <div class="page-width grid gap-5 py-8 text-sm text-slate-400 md:grid-cols-[1fr_auto] md:items-center">
                 <div>
                     <p class="text-white">Driveflow</p>
-                    <p class="mt-1">Turo-inspired Laravel marketplace demo with search, booking, trips, and admin tools.</p>
+                    <p class="mt-1">Simple Laravel car rental system with customer booking and admin car management.</p>
                 </div>
-                <div class="space-y-1 text-left md:text-right">
-                    <p>Customer login: <span class="text-white">demo@driveflow.test</span> / <span class="text-white">password</span></p>
-                    <p>Admin login: <span class="text-white">admin@driveflow.test</span> / <span class="text-white">password</span></p>
-                </div>
+                <p class="text-left md:text-right">Final project demo</p>
             </div>
         </footer>
     </body>
