@@ -4,7 +4,7 @@
             <div>
                 <p class="text-sm uppercase tracking-[0.18em] text-slate-400">Checkout</p>
                 <h1 class="mt-2 text-3xl font-semibold text-white">Confirm booking for {{ $car->name }}</h1>
-                <p class="mt-2 text-sm text-slate-300">This page stores the driver information and final booking details.</p>
+                <p class="mt-2 text-sm text-slate-300">Fill in the driver details and complete the payment section.</p>
             </div>
             <a href="{{ route('cars.show', $car) }}" class="button-secondary">Back to car</a>
         </div>
@@ -62,7 +62,7 @@
                     <div class="mt-5 space-y-5">
                         <div>
                             <label for="payment_method" class="field-label">Payment method</label>
-                            <select id="payment_method" name="payment_method" class="input-field" onchange="toggleCardField()">
+                            <select id="payment_method" name="payment_method" class="input-field" onchange="togglePaymentFields()">
                                 @foreach ($paymentMethods as $value => $label)
                                     <option value="{{ $value }}" @selected(old('payment_method', $formDefaults['payment_method']) === $value)>{{ $label }}</option>
                                 @endforeach
@@ -70,10 +70,32 @@
                             <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
                         </div>
 
-                        <div id="card-number-row">
-                            <label for="card_number" class="field-label">Card number</label>
-                            <input id="card_number" name="card_number" type="text" class="input-field" value="{{ old('card_number') }}" placeholder="4242 4242 4242 4242">
-                            <x-input-error class="mt-2" :messages="$errors->get('card_number')" />
+                        <div id="card-fields" class="space-y-5">
+                            <div>
+                                <label for="card_number" class="field-label">Card number</label>
+                                <input id="card_number" name="card_number" type="text" class="input-field" value="{{ old('card_number') }}" placeholder="4242 4242 4242 4242">
+                                <x-input-error class="mt-2" :messages="$errors->get('card_number')" />
+                            </div>
+
+                            <div class="grid gap-5 md:grid-cols-2">
+                                <div>
+                                    <label for="expiry_date" class="field-label">Expiration date</label>
+                                    <input id="expiry_date" name="expiry_date" type="text" class="input-field" value="{{ old('expiry_date') }}" placeholder="12/29">
+                                    <x-input-error class="mt-2" :messages="$errors->get('expiry_date')" />
+                                </div>
+
+                                <div>
+                                    <label for="security_code" class="field-label">CVC code</label>
+                                    <input id="security_code" name="security_code" type="text" class="input-field" value="{{ old('security_code') }}" placeholder="123">
+                                    <x-input-error class="mt-2" :messages="$errors->get('security_code')" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="aba-fields" class="hidden rounded-xl border border-white/10 bg-white/5 p-5">
+                            <p class="text-sm font-medium text-white">ABA QR Payment</p>
+                            <p class="mt-2 text-sm text-slate-300">Scan this QR code using ABA Mobile to complete the payment.</p>
+                            <img src="{{ asset('images/aba-qr.jpg') }}" alt="ABA QR code" class="mt-4 w-full rounded-lg border border-white/10 bg-white object-contain">
                         </div>
 
                         <label class="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
@@ -119,13 +141,16 @@
     </section>
 
     <script>
-        function toggleCardField() {
+        function togglePaymentFields() {
             const select = document.getElementById('payment_method');
-            const row = document.getElementById('card-number-row');
+            const cardFields = document.getElementById('card-fields');
+            const abaFields = document.getElementById('aba-fields');
+            const isCard = select.value === 'card';
 
-            row.style.display = select.value === 'card' ? 'block' : 'none';
+            cardFields.classList.toggle('hidden', !isCard);
+            abaFields.classList.toggle('hidden', isCard);
         }
 
-        toggleCardField();
+        togglePaymentFields();
     </script>
 </x-app-layout>
