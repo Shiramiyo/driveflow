@@ -3,236 +3,172 @@
 @section('title', $car->name.' | Driveflow')
 
 @section('content')
-    @php
-        $checkoutLabel = auth()->check() ? 'Continue to checkout' : 'Sign in to book';
-    @endphp
-
-    <section class="section-space" x-data="tripQuote({
-        rate: {{ (float) $car->price_per_day }},
-        deliveryFee: {{ (float) $car->delivery_fee }},
-        startAt: '{{ $selectedStartAt }}',
-        endAt: '{{ $selectedEndAt }}',
-        pickupOption: '{{ $selectedPickupOption }}',
-        checkoutBase: '{{ route('bookings.create', $car) }}'
-    })">
+    <section class="section-space">
         <div class="page-width">
-            <div class="mb-8 flex flex-wrap items-center gap-3 text-sm text-slate-400">
-                <a href="{{ route('home') }}" class="transition hover:text-white">Home</a>
-                <span>/</span>
-                <a href="{{ route('cars.index') }}" class="transition hover:text-white">Cars</a>
-                <span>/</span>
+            <div class="mb-6 text-sm text-slate-400">
+                <a href="{{ route('home') }}" class="hover:text-white">Home</a>
+                <span class="mx-2">/</span>
+                <a href="{{ route('cars.index') }}" class="hover:text-white">Cars</a>
+                <span class="mx-2">/</span>
                 <span class="text-white">{{ $car->name }}</span>
             </div>
 
-            <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-                <div class="space-y-8">
-                    <div class="grid gap-4 md:grid-cols-[1.4fr_0.6fr]">
-                        <img src="{{ $car->image_url }}" alt="{{ $car->name }}" class="h-full min-h-[22rem] w-full rounded-[2rem] object-cover">
-                        <div class="grid gap-4">
-                            @foreach (collect($car->gallery)->slice(1, 2) as $galleryImage)
-                                <img src="{{ $galleryImage }}" alt="{{ $car->name }} gallery" class="h-full min-h-[10.5rem] w-full rounded-[2rem] object-cover">
-                            @endforeach
-                        </div>
-                    </div>
+            <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+                <div class="space-y-6">
+                    <img src="{{ $car->image_url }}" alt="{{ $car->name }}" class="w-full rounded-xl border border-white/10 object-cover shadow-sm">
 
-                    <div class="shell-panel p-7">
-                        <span class="eyebrow">{{ $car->city->name }} · {{ $car->brand }}</span>
-                        <div class="mt-5 flex flex-wrap items-start justify-between gap-4">
-                            <div>
-                                <h1 class="display-title text-3xl sm:text-4xl">{{ $car->name }}</h1>
-                                <p class="mt-3 text-base text-slate-300">{{ $car->short_description }}</p>
-                            </div>
-                            <div class="rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-right">
-                                <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Hosted by</p>
-                                <p class="mt-2 text-lg font-semibold text-white">{{ $car->host->name }}</p>
-                                <p class="text-sm text-lime-200">{{ number_format((float) $car->rating, 1) }} ★ · {{ $car->trips_count }} trips</p>
-                            </div>
-                        </div>
+                    <div class="shell-panel p-6">
+                        <p class="text-sm text-slate-400">{{ $car->city->name }} · {{ $car->brand }}</p>
+                        <h1 class="mt-2 text-3xl font-semibold text-white">{{ $car->name }}</h1>
+                        <p class="mt-4 text-sm leading-7 text-slate-300">{{ $car->description }}</p>
 
-                        <div class="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                        <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                             <div class="stat-tile">
                                 <p class="text-sm text-slate-400">Year</p>
-                                <p class="mt-2 text-lg font-semibold text-white">{{ $car->year }}</p>
+                                <p class="mt-2 text-white">{{ $car->year }}</p>
                             </div>
                             <div class="stat-tile">
                                 <p class="text-sm text-slate-400">Transmission</p>
-                                <p class="mt-2 text-lg font-semibold text-white">{{ $car->transmission }}</p>
+                                <p class="mt-2 text-white">{{ $car->transmission }}</p>
                             </div>
                             <div class="stat-tile">
-                                <p class="text-sm text-slate-400">Fuel type</p>
-                                <p class="mt-2 text-lg font-semibold text-white">{{ $car->fuel_type }}</p>
+                                <p class="text-sm text-slate-400">Fuel</p>
+                                <p class="mt-2 text-white">{{ $car->fuel_type }}</p>
                             </div>
                             <div class="stat-tile">
                                 <p class="text-sm text-slate-400">Seats</p>
-                                <p class="mt-2 text-lg font-semibold text-white">{{ $car->seats }}</p>
+                                <p class="mt-2 text-white">{{ $car->seats }}</p>
                             </div>
                         </div>
 
-                        <div class="mt-8 grid gap-8 xl:grid-cols-[1fr_0.75fr]">
-                            <div>
-                                <h2 class="text-2xl font-semibold text-white">Description</h2>
-                                <p class="mt-4 text-sm leading-7 text-slate-300">{{ $car->description }}</p>
-                            </div>
-                            <div>
-                                <h2 class="text-2xl font-semibold text-white">Included features</h2>
+                        @if (! empty($car->features))
+                            <div class="mt-6">
+                                <h2 class="text-xl font-semibold text-white">Features</h2>
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     @foreach ($car->features as $feature)
                                         <span class="pill">{{ $feature }}</span>
                                     @endforeach
                                 </div>
-
-                                <div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-5">
-                                    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Pickup options</p>
-                                    <ul class="mt-4 space-y-3 text-sm text-slate-300">
-                                        @foreach ($pickupOptionLabels as $value => $label)
-                                            @if (in_array($value, $car->pickup_options, true))
-                                                <li class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                                                    <span>{{ $label }}</span>
-                                                    <span class="text-lime-200">{{ $value === 'self_pickup' ? 'Included' : '+$'.number_format((float) $car->delivery_fee, 0) }}</span>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
 
-                <aside class="shell-panel sticky top-28 h-fit p-7">
-                    <div class="flex items-start justify-between gap-3">
+                <aside class="shell-panel p-6">
+                    <div class="flex items-start justify-between gap-4">
                         <div>
-                            <p class="text-sm text-slate-400">Price per day</p>
-                            <p class="mt-2 text-4xl font-semibold text-white">${{ number_format((float) $car->price_per_day, 0) }}</p>
+                            <p class="text-sm text-slate-400">Daily price</p>
+                            <p class="mt-2 text-3xl font-semibold text-white">${{ number_format((float) $car->price_per_day, 0) }}/day</p>
                         </div>
                         <span class="pill">{{ number_format((float) $car->rating, 1) }} ★</span>
                     </div>
 
-                    <div class="mt-8 space-y-5">
+                    <div class="mt-6 space-y-4">
                         <div>
-                            <label for="detail-start" class="field-label">Start date & time</label>
-                            <input id="detail-start" type="datetime-local" class="input-field" x-model="startAt" @change="recalculate()">
+                            <label for="detail-start" class="field-label">Start date</label>
+                            <input id="detail-start" type="datetime-local" class="input-field" value="{{ $selectedStartAt }}">
                         </div>
 
                         <div>
-                            <label for="detail-end" class="field-label">End date & time</label>
-                            <input id="detail-end" type="datetime-local" class="input-field" x-model="endAt" @change="recalculate()">
+                            <label for="detail-end" class="field-label">End date</label>
+                            <input id="detail-end" type="datetime-local" class="input-field" value="{{ $selectedEndAt }}">
                         </div>
 
                         <div>
                             <label for="detail-pickup" class="field-label">Pickup option</label>
-                            <select id="detail-pickup" class="input-field" x-model="pickupOption" @change="recalculate()">
+                            <select id="detail-pickup" class="input-field">
                                 @foreach ($pickupOptionLabels as $value => $label)
                                     @if (in_array($value, $car->pickup_options, true))
-                                        <option value="{{ $value }}">{{ $label }}</option>
+                                        <option value="{{ $value }}" @selected($selectedPickupOption === $value)>{{ $label }}</option>
                                     @endif
                                 @endforeach
                             </select>
                         </div>
                     </div>
 
-                    <div class="mt-8 rounded-3xl border border-white/10 bg-slate-900/75 p-5">
-                        <div class="flex items-center justify-between text-sm text-slate-300">
-                            <span>Trip length</span>
-                            <span x-text="`${tripDays} day${tripDays === 1 ? '' : 's'}`"></span>
+                    <div class="mt-6 rounded-xl border border-white/10 bg-slate-900/70 p-5 text-sm text-slate-300">
+                        <div class="flex items-center justify-between">
+                            <span>Trip days</span>
+                            <span id="quote-days">{{ $quote['trip_days'] }}</span>
                         </div>
-                        <div class="mt-3 flex items-center justify-between text-sm text-slate-300">
-                            <span>Base fare</span>
-                            <span x-text="formatCurrency(subtotal)"></span>
+                        <div class="mt-3 flex items-center justify-between">
+                            <span>Car rental</span>
+                            <span id="quote-subtotal">${{ number_format((float) $quote['trip_subtotal'], 2) }}</span>
                         </div>
-                        <div class="mt-3 flex items-center justify-between text-sm text-slate-300">
-                            <span>Pickup / delivery</span>
-                            <span x-text="formatCurrency(deliveryTotal)"></span>
+                        <div class="mt-3 flex items-center justify-between">
+                            <span>Pickup fee</span>
+                            <span id="quote-delivery">${{ number_format((float) $quote['delivery_fee'], 2) }}</span>
                         </div>
                         <div class="mt-4 border-t border-white/10 pt-4">
-                            <div class="flex items-center justify-between text-base font-semibold text-white">
+                            <div class="flex items-center justify-between font-semibold text-white">
                                 <span>Estimated total</span>
-                                <span x-text="formatCurrency(total)"></span>
+                                <span id="quote-total">${{ number_format((float) $quote['total_amount'], 2) }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <a :href="checkoutUrl" class="button-primary mt-8 w-full">
-                        {{ $checkoutLabel }}
-                    </a>
-
-                    <p class="mt-4 text-sm leading-6 text-slate-400">
-                        Automatic trip pricing updates as you change the dates. Final totals are rechecked server-side at checkout.
-                    </p>
+                    @auth
+                        <button type="button" class="button-primary mt-6 w-full" onclick="goToCheckout()">Continue to checkout</button>
+                    @else
+                        <a href="{{ route('login') }}" class="button-primary mt-6 w-full">Sign in to continue</a>
+                    @endauth
                 </aside>
             </div>
-
-            @if ($relatedCars->count())
-                <div class="mt-16">
-                    <div class="mb-6 flex items-end justify-between gap-4">
-                        <div>
-                            <span class="eyebrow">More in {{ $car->city->name }}</span>
-                            <h2 class="section-title mt-4 text-2xl">Nearby alternatives</h2>
-                        </div>
-                    </div>
-
-                    <div class="grid gap-6 md:grid-cols-3">
-                        @foreach ($relatedCars as $relatedCar)
-                            <a href="{{ route('cars.show', $relatedCar) }}" class="shell-panel overflow-hidden transition duration-200 hover:-translate-y-1">
-                                <img src="{{ $relatedCar->image_url }}" alt="{{ $relatedCar->name }}" class="h-56 w-full object-cover">
-                                <div class="p-5">
-                                    <p class="text-sm text-slate-400">{{ $relatedCar->brand }}</p>
-                                    <p class="mt-2 text-lg font-semibold text-white">{{ $relatedCar->name }}</p>
-                                    <p class="mt-3 text-sm text-lime-200">${{ number_format((float) $relatedCar->price_per_day, 0) }}/day</p>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
         </div>
     </section>
 
     <script>
-        window.tripQuote = ({ rate, deliveryFee, startAt, endAt, pickupOption, checkoutBase }) => ({
-            rate,
-            deliveryFee,
-            startAt,
-            endAt,
-            pickupOption,
-            checkoutBase,
-            tripDays: 1,
-            subtotal: rate,
-            deliveryTotal: 0,
-            total: rate,
-            init() {
-                this.recalculate();
-            },
-            recalculate() {
-                const start = new Date(this.startAt);
-                const end = new Date(this.endAt);
-                let diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        const ratePerDay = {{ (float) $car->price_per_day }};
+        const baseDeliveryFee = {{ (float) $car->delivery_fee }};
+        const checkoutBaseUrl = @json(route('bookings.create', $car));
 
-                if (!Number.isFinite(diff) || diff < 1) {
-                    diff = 1;
-                }
+        function getTripDays() {
+            const start = new Date(document.getElementById('detail-start').value);
+            const end = new Date(document.getElementById('detail-end').value);
+            const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 
-                this.tripDays = diff;
-                this.subtotal = this.rate * diff;
-                this.deliveryTotal = this.pickupOption === 'airport_meetup'
-                    ? this.deliveryFee
-                    : this.pickupOption === 'doorstep_delivery'
-                        ? this.deliveryFee + 18
-                        : 0;
-                this.total = this.subtotal + this.deliveryTotal;
-            },
-            formatCurrency(value) {
-                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
-            },
-            get checkoutUrl() {
-                const params = new URLSearchParams({
-                    start_at: this.startAt,
-                    end_at: this.endAt,
-                    pickup_option: this.pickupOption,
-                });
+            return Number.isFinite(diff) && diff > 0 ? diff : 1;
+        }
 
-                return `${this.checkoutBase}?${params.toString()}`;
-            },
-        });
+        function getPickupFee() {
+            const pickupOption = document.getElementById('detail-pickup').value;
+
+            if (pickupOption === 'airport_meetup') {
+                return baseDeliveryFee;
+            }
+
+            if (pickupOption === 'doorstep_delivery') {
+                return baseDeliveryFee + 18;
+            }
+
+            return 0;
+        }
+
+        function refreshQuote() {
+            const tripDays = getTripDays();
+            const subtotal = tripDays * ratePerDay;
+            const pickupFee = getPickupFee();
+            const total = subtotal + pickupFee;
+
+            document.getElementById('quote-days').textContent = `${tripDays} day${tripDays === 1 ? '' : 's'}`;
+            document.getElementById('quote-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('quote-delivery').textContent = `$${pickupFee.toFixed(2)}`;
+            document.getElementById('quote-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function goToCheckout() {
+            const params = new URLSearchParams({
+                start_at: document.getElementById('detail-start').value,
+                end_at: document.getElementById('detail-end').value,
+                pickup_option: document.getElementById('detail-pickup').value,
+            });
+
+            window.location.href = `${checkoutBaseUrl}?${params.toString()}`;
+        }
+
+        document.getElementById('detail-start').addEventListener('change', refreshQuote);
+        document.getElementById('detail-end').addEventListener('change', refreshQuote);
+        document.getElementById('detail-pickup').addEventListener('change', refreshQuote);
+        refreshQuote();
     </script>
 @endsection
