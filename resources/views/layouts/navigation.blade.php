@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
+<nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/95">
     <div class="page-width">
         <div class="flex items-center justify-between py-4">
             <a href="{{ route('home') }}">
@@ -21,10 +21,7 @@
 
             <div class="hidden items-center gap-3 lg:flex">
                 @auth
-                    <div class="pill">
-                        <span class="h-2 w-2 rounded-full bg-lime-300"></span>
-                        {{ auth()->user()->name }}
-                    </div>
+                    <span class="text-sm text-slate-300">{{ auth()->user()->name }}</span>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -32,7 +29,7 @@
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="button-ghost">Sign in</a>
-                    <a href="{{ route('register') }}" class="button-primary">Create account</a>
+                    <a href="{{ route('register') }}" class="button-primary">Register</a>
                 @endauth
             </div>
 
@@ -62,7 +59,7 @@
                 </form>
             @else
                 <a href="{{ route('login') }}" class="block rounded-2xl bg-white/5 px-4 py-3 text-sm text-white">Sign in</a>
-                <a href="{{ route('register') }}" class="block rounded-2xl bg-lime-300 px-4 py-3 text-sm font-semibold text-slate-950">Create account</a>
+                <a href="{{ route('register') }}" class="block rounded-2xl bg-lime-300 px-4 py-3 text-sm font-semibold text-slate-950">Register</a>
             @endauth
         </div>
     </div>
